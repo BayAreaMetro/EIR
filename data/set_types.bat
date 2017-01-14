@@ -16,14 +16,14 @@ cast(total_residential_units as numeric(8,2)) as total_residential_units
 
 (for %%a in (%po_runs%) do ( 
    ogr2ogr -append ^
-   -nln %%a ^
+   -nln %%a_eirslct ^
    -f FileGDB ^
    -sql "%po_query% FROM %%a" update_footprints.gdb %%a.csv
 ))
 
 (for %%a in (%pd_runs%) do ( 
    ogr2ogr -append ^
-   -nln %%a ^
+   -nln %%a_eirslct ^
    -f FileGDB ^
    -sql "%pd_query% FROM %%a WHERE cast(total_residential_units as numeric(8,2)) > 0 OR cast(total_job_spaces as numeric(8,2))>0" update_footprints.gdb %%a.csv
 ))
