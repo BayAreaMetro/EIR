@@ -6,9 +6,9 @@
 --The footprint uses a threshold of greatet than 8 ppl per acre or 10 jobs per acre.
 --Because the urbansim output does not contain ppl per parcel, an average hhsize of 2.69 was used to estimate population for each parcel based upon nthe number of res. units on that parcel.
 --Because the alt output does not contain ppl per parcel, an average hhsize of 2.69 was used to estimate population for each parcel based upon nthe number of res. units on that parcel.
---select count(objectid) From UrbanSim.UrbanSim_Parcels
+--select count(objectid) From Analysis.Analysis_Parcels
 --Total Parcels (1956208)
-Create View UrbanSim.run10_parcel_output_eir_footprint_spatial as
+Create View Analysis.run10_parcel_output_eir_footprint_spatial as
 SELECT  p.COUNTY_ID as county_id, 
 		r.parcel_id as parcel_id, 
 		cast(r.year_built as float) as year_built,
@@ -18,16 +18,16 @@ SELECT  p.COUNTY_ID as county_id,
 		Cast((2.69*pd.total_residential_units)/(p.shape.STArea()*0.000247105381) as numeric(18,2)) as People_Per_Acre,
 		Cast((pd.total_job_spaces/(p.shape.STArea()*0.000247105381)) as numeric(18,2)) as Jobs_Per_Acre,
 		p.Shape as Shape
-FROM UrbanSim.run10_parcel_data_diff_eirslct as pd
-left join UrbanSim.run10_parcel_output_eirslct as r
+FROM Analysis.run10_parcel_data_diff_eirslct as pd
+left join Analysis.run10_parcel_output_eirslct as r
 on pd.parcel_id = r.parcel_id
-LEFT JOIN UrbanSim.p09_01_2015_parcel_shareable as p
+LEFT JOIN Analysis.p09_01_2015_parcel_shareable as p
 ON p.parcel_id = r.parcel_id
 WHERE cast(r.year_built AS float)>2015;
 
 GO
 
-CREATE VIEW UrbanSim.run17_parcel_output_eir_footprint_spatial AS
+CREATE VIEW Analysis.run17_parcel_output_eir_footprint_spatial AS
 SELECT  p.COUNTY_ID as county_id, 
 		r.parcel_id as parcel_id, 
 		cast(r.year_built as integer) as year_built,
@@ -37,16 +37,16 @@ SELECT  p.COUNTY_ID as county_id,
 		Cast((2.69*pd.total_residential_units)/(p.shape.STArea()*0.000247105381) as numeric(18,2)) as People_Per_Acre,
 		Cast((pd.total_job_spaces/(p.shape.STArea()*0.000247105381)) as numeric(18,2)) as Jobs_Per_Acre,
 		p.Shape as Shape
-FROM UrbanSim.run17_parcel_data_diff_eirslct as pd
-left join UrbanSim.run17_parcel_output_eirslct as r
+FROM Analysis.run17_parcel_data_diff_eirslct as pd
+left join Analysis.run17_parcel_output_eirslct as r
 on pd.parcel_id = r.parcel_id
-left join UrbanSim.p09_01_2015_parcel_shareable as p
+left join Analysis.p09_01_2015_parcel_shareable as p
 on p.parcel_id = r.parcel_id
 WHERE cast(r.year_built as integer)>2015;
 
 GO
 
-CREATE VIEW UrbanSim.run11_parcel_output_eir_footprint_spatial AS
+CREATE VIEW Analysis.run11_parcel_output_eir_footprint_spatial AS
 SELECT  p.COUNTY_ID as county_id, 
 		r.parcel_id as parcel_id, 
 		cast(r.year_built as integer) as year_built,
@@ -56,16 +56,16 @@ SELECT  p.COUNTY_ID as county_id,
 		Cast((2.69*pd.total_residential_units)/(p.shape.STArea()*0.000247105381) as numeric(18,2)) as People_Per_Acre,
 		Cast((pd.total_job_spaces/(p.shape.STArea()*0.000247105381)) as numeric(18,2)) as Jobs_Per_Acre,
 		p.Shape as Shape
-FROM UrbanSim.run11_parcel_data_diff_eirslct as pd
-left join UrbanSim.run11_parcel_output_eirslct as r
+FROM Analysis.run11_parcel_data_diff_eirslct as pd
+left join Analysis.run11_parcel_output_eirslct as r
 on pd.parcel_id = r.parcel_id
-left join UrbanSim.p09_01_2015_parcel_shareable as p
+left join Analysis.p09_01_2015_parcel_shareable as p
 on p.parcel_id = r.parcel_id
 WHERE cast(r.year_built as integer)>2015;
 
 GO 
 
-CREATE VIEW UrbanSim.run12_parcel_output_eir_footprint_spatial AS
+CREATE VIEW Analysis.run12_parcel_output_eir_footprint_spatial AS
 SELECT  p.COUNTY_ID as county_id, 
 		r.parcel_id as parcel_id, 
 		cast(r.year_built as integer) as year_built,
@@ -75,16 +75,16 @@ SELECT  p.COUNTY_ID as county_id,
 		Cast((2.69*pd.total_residential_units)/(p.shape.STArea()*0.000247105381) as numeric(18,2)) as People_Per_Acre,
 		Cast((pd.total_job_spaces/(p.shape.STArea()*0.000247105381)) as numeric(18,2)) as Jobs_Per_Acre,
 		p.Shape as Shape
-FROM UrbanSim.run12_parcel_data_diff_eirslct as pd
-left join UrbanSim.run12_parcel_output_eirslct as r
+FROM Analysis.run12_parcel_data_diff_eirslct as pd
+left join Analysis.run12_parcel_output_eirslct as r
 on pd.parcel_id = r.parcel_id
-left join UrbanSim.p09_01_2015_parcel_shareable as p
+left join Analysis.p09_01_2015_parcel_shareable as p
 on p.parcel_id = r.parcel_id
 WHERE cast(r.year_built as integer)>2015;
 
 GO 
 
-CREATE VIEW UrbanSim.run7224_parcel_output_eir_footprint_spatial AS
+CREATE VIEW Analysis.run7224_parcel_output_eir_footprint_spatial AS
 SELECT  p.COUNTY_ID as county_id, 
 		r.parcel_id as parcel_id, 
 		cast(r.year_built as integer) as year_built,
@@ -94,10 +94,10 @@ SELECT  p.COUNTY_ID as county_id,
 		Cast((2.69*pd.total_residential_units)/(p.shape.STArea()*0.000247105381) as numeric(18,2)) as People_Per_Acre,
 		Cast((pd.total_job_spaces/(p.shape.STArea()*0.000247105381)) as numeric(18,2)) as Jobs_Per_Acre,
 		p.Shape as Shape
-FROM UrbanSim.run7224_parcel_data_diff_eirslct as pd
-left join UrbanSim.run7224_parcel_output_eirslct as r
+FROM Analysis.run7224_parcel_data_diff_eirslct as pd
+left join Analysis.run7224_parcel_output_eirslct as r
 on pd.parcel_id = r.parcel_id
-left join UrbanSim.p09_01_2015_parcel_shareable as p
+left join Analysis.p09_01_2015_parcel_shareable as p
 on p.parcel_id = r.parcel_id
 WHERE cast(r.year_built as integer)>2015;
 
