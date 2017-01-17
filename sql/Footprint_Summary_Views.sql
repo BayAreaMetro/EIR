@@ -54,6 +54,17 @@ SELECT 'run7224' as tablename,
 	ROUND(SUM(total_residential_units),0) as sum_total_residential_units,
 	ROUND(AVG(people_per_acre),0) as avg_ppl_per_acre
   FROM [DEIR2017].[Analysis].run7224_parcel_output_eir_footprint_spatial
+UNION
+SELECT 'ALT_4' as tablename, 
+	count(*) AS parcel_count, 
+	ROUND(SUM(Acres),0) as sum_acres,
+	ROUND(AVG(Acres),2) as avg_acres,
+	ROUND(SUM(total_job_spaces),0) as sum_total_job_spaces,
+	ROUND(AVG(People_Per_Acre),2) as avg_people_per_acre,
+	ROUND(AVG(Jobs_Per_Acre),2) as avg_jobs_per_acre,
+	ROUND(SUM(total_residential_units),0) as sum_total_residential_units,
+	ROUND(AVG(people_per_acre),0) as avg_ppl_per_acre
+  FROM [DEIR2017].[Analysis].run7224_parcel_output_eir_footprint_spatial
 
 
 --summary view of all scenarios on the parcels
