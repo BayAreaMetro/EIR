@@ -64,7 +64,7 @@ SELECT 'ALT_4' as tablename,
 	ROUND(AVG(Jobs_Per_Acre),2) as avg_jobs_per_acre,
 	ROUND(SUM(total_residential_units),0) as sum_total_residential_units,
 	ROUND(AVG(people_per_acre),0) as avg_ppl_per_acre
-  FROM [DEIR2017].[Analysis].run7224_parcel_output_eir_footprint_spatial
+  FROM [DEIR2017].[Analysis].ALT_4_GFP_FC
 
 
 --summary view of all scenarios on the parcels
