@@ -37,7 +37,8 @@ SELECT  p.COUNTY_ID as county_id,
 		Cast((pd.total_job_spaces/(p.shape.STArea()*0.000247105381)) as numeric(18,2)) as Jobs_Per_Acre,
 		p.Shape as Shape
 FROM Analysis.run17_parcel_data_diff_eirslct as pd
-left join Analysis.run17_parcel_output_eirslct as r
+left join (select distinct(parcel_id) from Analysis.run17_parcel_output_eirslct 
+				WHERE cast(year_built AS float)>2015) as r
 on pd.parcel_id = r.parcel_id
 left join Analysis.p09_01_2015_parcel_shareable as p
 on p.parcel_id = r.parcel_id
@@ -56,7 +57,8 @@ SELECT  p.COUNTY_ID as county_id,
 		Cast((pd.total_job_spaces/(p.shape.STArea()*0.000247105381)) as numeric(18,2)) as Jobs_Per_Acre,
 		p.Shape as Shape
 FROM Analysis.run11_parcel_data_diff_eirslct as pd
-left join Analysis.run11_parcel_output_eirslct as r
+left join (select distinct(parcel_id) from Analysis.run11_parcel_output_eirslct 
+				WHERE cast(year_built AS float)>2015) as r
 on pd.parcel_id = r.parcel_id
 left join Analysis.p09_01_2015_parcel_shareable as p
 on p.parcel_id = r.parcel_id
@@ -75,7 +77,8 @@ SELECT  p.COUNTY_ID as county_id,
 		Cast((pd.total_job_spaces/(p.shape.STArea()*0.000247105381)) as numeric(18,2)) as Jobs_Per_Acre,
 		p.Shape as Shape
 FROM Analysis.run12_parcel_data_diff_eirslct as pd
-left join Analysis.run12_parcel_output_eirslct as r
+left join (select distinct(parcel_id) from Analysis.run12_parcel_output_eirslct 
+				WHERE cast(year_built AS float)>2015) as r
 on pd.parcel_id = r.parcel_id
 left join Analysis.p09_01_2015_parcel_shareable as p
 on p.parcel_id = r.parcel_id
@@ -94,7 +97,8 @@ SELECT  p.COUNTY_ID as county_id,
 		Cast((pd.total_job_spaces/(p.shape.STArea()*0.000247105381)) as numeric(18,2)) as Jobs_Per_Acre,
 		p.Shape as Shape
 FROM Analysis.run7224_parcel_data_diff_eirslct as pd
-left join Analysis.run7224_parcel_output_eirslct as r
+left join (select distinct(parcel_id) from Analysis.run7224_parcel_output_eirslct 
+				WHERE cast(year_built AS float)>2015) as r
 on pd.parcel_id = r.parcel_id
 left join Analysis.p09_01_2015_parcel_shareable as p
 on p.parcel_id = r.parcel_id
