@@ -31,7 +31,8 @@ SELECT  Top 50000      t1.FID_Counties, t1.FID_TPAs,
 	                     t1.total_job_spaces AS total_job_spaces, 
 	                     t1.Acres AS Acres, 
 	                     t1.People_Per_Acre AS People_Per_Acre, 
-	                     t1.Jobs_Per_Acre AS Jobs_Per_Acre
+	                     t1.Jobs_Per_Acre AS Jobs_Per_Acre,
+	                     (t1.total_residential_units/t1.Acres) AS dwelling_units_per_acre
 FROM            UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY_NO_DUPS as t1
 WHERE t1.FID_TPAs = 1
 ORDER BY t1.parcel_id
