@@ -16,20 +16,20 @@ from UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY
 Order By parcel_id
 Go
 create view UrbanSim.Alt_4_Counties_TPAs_Density as
-SELECT  Top 50000      UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY.FID_Counties, UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY.FID_TPAs, 
-                         UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY.COUNTYNAME, UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY.CountyFIP, 
-                         UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY.parcel_id, MAX(UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY.Estimated_Population) AS Estimated_Population,
-                          MAX(UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY.total_residential_units) AS total_residential_units, 
-                         MAX(UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY.total_job_spaces) AS total_job_spaces, MAX(UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY.Acres) 
-                         AS Acres, MAX(UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY.People_Per_Acre) AS People_Per_Acre, 
-                         MAX(UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY.Jobs_Per_Acre) AS Jobs_Per_Acre, UrbanSim.Dup_GrowthParcels.Total_Dups
-FROM            UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY LEFT OUTER JOIN
-                         UrbanSim.Dup_GrowthParcels ON UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY.parcel_id = UrbanSim.Dup_GrowthParcels.parcel_id
-GROUP BY UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY.FID_Counties, UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY.FID_TPAs, 
-                         UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY.COUNTYNAME, UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY.CountyFIP, 
-                         UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY.parcel_id, UrbanSim.Dup_GrowthParcels.Total_Dups
-HAVING        (UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY.FID_TPAs = 1) AND (UrbanSim.Dup_GrowthParcels.Total_Dups > 1)
-ORDER BY UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY.parcel_id
+SELECT  Top 50000      t1.FID_Counties, t1.FID_TPAs, 
+                         t1.COUNTYNAME, t1.CountyFIP, 
+                         t1.parcel_id, MAX(t1.Estimated_Population) AS Estimated_Population,
+                          MAX(t1.total_residential_units) AS total_residential_units, 
+                         MAX(t1.total_job_spaces) AS total_job_spaces, MAX(t1.Acres) 
+                         AS Acres, MAX(t1.People_Per_Acre) AS People_Per_Acre, 
+                         MAX(t1.Jobs_Per_Acre) AS Jobs_Per_Acre, t2.Total_Dups
+FROM            UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY as t1 LEFT OUTER JOIN
+                         UrbanSim.Dup_GrowthParcels as t2 ON t1.parcel_id = t2.parcel_id
+GROUP BY t1.FID_Counties, t1.FID_TPAs, 
+                         t1.COUNTYNAME, t1.CountyFIP, 
+                         t1.parcel_id, t2.Total_Dups
+HAVING        (t1.FID_TPAs = 1) AND (t2.Total_Dups > 1)
+ORDER BY t1.parcel_id
 Go
 --Drop view UrbanSim.Dup_GrowthParcels 
 create view UrbanSim.Dup_GrowthParcels as
