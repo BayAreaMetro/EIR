@@ -45,17 +45,6 @@ GROUP BY parcel_id
 HAVING        (COUNT(parcel_id) > 1)
 ORDER BY Total_Dups DESC
 
---Need to fix parcels that cross county borders. The list below identifies those parcels that cross county borders.  This occurs due to the differences in the geometry between the parcel dataset and the TomTom Basemap County boundaries.
---There are 10 parcels that fit this condition.
-SELECT        parcel_id, COUNT(parcel_id) AS Total_Dups
-FROM            UrbanSim.Alt_4_Counties_TPAs_Density
-GROUP BY parcel_id
-HAVING        (COUNT(parcel_id) > 1)
-ORDER BY Total_Dups DESC
-
-select * From UrbanSim.Alt_4_Counties_TPAs_Density
-Where parcel_id = '1019099'
-
 --create a view that removes the duplicates
 
 CREATE VIEW UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY_NO_DUPS AS
