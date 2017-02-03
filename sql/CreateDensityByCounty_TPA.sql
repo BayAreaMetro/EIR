@@ -15,6 +15,13 @@ Jobs_Per_Acre
 from UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY
 Order By parcel_id
 Go
+/*
+GOAL:
+3.       Quantify by County the:
+a.       2015 and 2040 Dwelling Units per acre within TPAs
+b.       2015 and 2040 Employment/Jobs per acre within TPAs
+4. Quantify by County the acres of overlap between the Preferred Scenario’s (proposed Plan) land use footprint and transportation footprint.
+*/ 
 create view UrbanSim.Alt_4_Counties_TPAs_Density as
 SELECT  Top 50000      t1.FID_Counties, t1.FID_TPAs, 
                          t1.COUNTYNAME, t1.CountyFIP, 
