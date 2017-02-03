@@ -45,6 +45,39 @@ GROUP BY parcel_id
 HAVING        (COUNT(parcel_id) > 1)
 ORDER BY Total_Dups DESC
 
+SELECT        parcel_id, COUNT(parcel_id) AS Total_Dups
+FROM            UrbanSim.COUNTIES_TPAS_ALT_1_OVERLAY
+GROUP BY parcel_id
+HAVING        (COUNT(parcel_id) > 1)
+ORDER BY Total_Dups DESC;
+GO
+--result:100+ parcels
+
+SELECT        parcel_id, COUNT(parcel_id) AS Total_Dups
+FROM            UrbanSim.COUNTIES_TPAS_ALT_2_OVERLAY
+GROUP BY parcel_id
+HAVING        (COUNT(parcel_id) > 1)
+ORDER BY Total_Dups DESC;
+GO
+--result:Alt2 does not exist
+
+SELECT        parcel_id, COUNT(parcel_id) AS Total_Dups
+FROM            UrbanSim.COUNTIES_TPAS_ALT_3_OVERLAY
+GROUP BY parcel_id
+HAVING        (COUNT(parcel_id) > 1)
+ORDER BY Total_Dups DESC;
+GO
+--result:50+ parcels
+
+SELECT        parcel_id, COUNT(parcel_id) AS Total_Dups
+FROM            UrbanSim.COUNTIES_TPAS_ALT_5_OVERLAY
+GROUP BY parcel_id
+HAVING        (COUNT(parcel_id) > 1)
+ORDER BY Total_Dups DESC;
+GO
+--result:+106 parcels
+
+
 --create a view that removes the duplicates
 
 CREATE VIEW UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY_NO_DUPS AS
