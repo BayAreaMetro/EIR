@@ -95,3 +95,11 @@ WHERE NOT
 	(PARCEL_ID = 1196423 AND countyFIP <> 81)  OR
 	(PARCEL_ID = 1311949 AND countyFIP <> 85)  OR
 	(PARCEL_ID = 1311950 AND countyFIP <> 85) )
+
+--example subquery to select parcels NOT in the resolved duplicates table
+--we can use this idiom to exclude duplicate parcels from any table
+select t1.* 
+FROM UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY t1,
+UrbanSim.County_Dup_Parcels_Resolved t2
+WHERE t1.parcel_id = t2.parcel_id and
+t2.countyFIP <> t1.countyFIP
