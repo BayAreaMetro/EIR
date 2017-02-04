@@ -38,47 +38,60 @@ WHERE t1.FID_TPAs = 1
 ORDER BY t1.parcel_id
 Go
 --Drop view UrbanSim.Dup_GrowthParcels 
-create view UrbanSim.Dup_GrowthParcels as
-SELECT        parcel_id, COUNT(parcel_id) AS Total_Dups
+drop view UrbanSim.County_Dup_Parcels;
+go
+create view UrbanSim.County_Dup_Parcels as
+select distinct q1.parcel_id from 
+(SELECT        parcel_id 
 FROM            UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY
 GROUP BY parcel_id
 HAVING        (COUNT(parcel_id) > 1)
-ORDER BY Total_Dups DESC
-
-SELECT        parcel_id, COUNT(parcel_id) AS Total_Dups
+UNION
+SELECT        parcel_id
 FROM            UrbanSim.COUNTIES_TPAS_ALT_1_OVERLAY
 GROUP BY parcel_id
 HAVING        (COUNT(parcel_id) > 1)
-ORDER BY Total_Dups DESC;
-GO
---result:100+ parcels
-
-SELECT        parcel_id, COUNT(parcel_id) AS Total_Dups
-FROM            UrbanSim.COUNTIES_TPAS_ALT_2_OVERLAY
-GROUP BY parcel_id
-HAVING        (COUNT(parcel_id) > 1)
-ORDER BY Total_Dups DESC;
-GO
---result:Alt2 does not exist
-
-SELECT        parcel_id, COUNT(parcel_id) AS Total_Dups
+UNION
+SELECT        parcel_id
 FROM            UrbanSim.COUNTIES_TPAS_ALT_3_OVERLAY
 GROUP BY parcel_id
 HAVING        (COUNT(parcel_id) > 1)
-ORDER BY Total_Dups DESC;
-GO
---result:50+ parcels
-
-SELECT        parcel_id, COUNT(parcel_id) AS Total_Dups
+UNION
+SELECT        parcel_id
 FROM            UrbanSim.COUNTIES_TPAS_ALT_5_OVERLAY
 GROUP BY parcel_id
-HAVING        (COUNT(parcel_id) > 1)
-ORDER BY Total_Dups DESC;
+HAVING        (COUNT(parcel_id) > 1)) as q1
 GO
 --result:+106 parcels
 
 
---create a view that removes the duplicates
+SELECT q2.* INTO UrbanSim.County_Dup_Parcels_POS FROM (
+SELECT t1.parcel_id as parcel_id, t2.Shape.STPointOnSurface() as PointGeom
+FROM UrbanSim.County_Dup_Parcels as t1,
+UrbanSim.Parcels as t2
+WHERE t1.parcel_id = t2.parcel_id) as q2
+
+
+CREATE VIEW UrbanSim.County_Dup_Parcels_Resolved AS
+SELECT 
+		t2.parcel_id, t3.COUNTYNAME, t3.CountyFIP
+FROM 
+		UrbanSim.County_Dup_Parcels_POS as t2 
+INNER JOIN
+		dbo.COUNTIES as t3
+ON 
+		t2.PointGeom.STWithin(t3.Shape) = 1
+
+SELECT 
+    polyTable.[PolygonID]
+,   pointTable.[PointID]
+FROM 
+[PolygonTable_Name] polyTable WITH(INDEX([SPATIAL_INDEX_NAME]))
+INNER JOIN 
+[PointTabl_Name] pointTable
+ON
+polyTable.Geog.STIntersects(pointTable.Geog) = 1
+
 
 CREATE VIEW UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY_NO_DUPS AS
 select * FROM UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY 
