@@ -82,17 +82,6 @@ INNER JOIN
 ON 
 		t2.PointGeom.STWithin(t3.Shape) = 1
 
-SELECT 
-    polyTable.[PolygonID]
-,   pointTable.[PointID]
-FROM 
-[PolygonTable_Name] polyTable WITH(INDEX([SPATIAL_INDEX_NAME]))
-INNER JOIN 
-[PointTabl_Name] pointTable
-ON
-polyTable.Geog.STIntersects(pointTable.Geog) = 1
-
-
 CREATE VIEW UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY_NO_DUPS AS
 select * FROM UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY 
 WHERE NOT 
