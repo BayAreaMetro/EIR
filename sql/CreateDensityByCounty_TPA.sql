@@ -128,7 +128,9 @@ INSERT INTO UrbanSim.County_Dup_Parcels_Resolved_Centroid_Table (parcel_id, COUN
 SELECT 
 		parcel_id, COUNTYNAME, CountyFIP
 FROM 
-		UrbanSim.County_Dup_Parcels_Resolved_Centroid
+		UrbanSim.County_Dup_Parcels_Resolved_Centroid;
+
+GO
 
 --update the county assignments for parcels with duplicate entries
 UPDATE
@@ -141,7 +143,9 @@ FROM
     INNER JOIN UrbanSim.County_Dup_Parcels_Resolved_Centroid_Table AS t2
         ON t1.parcel_id = t2.parcel_id
 WHERE
-    t1.parcel_id = t2.parcel_id
+    t1.parcel_id = t2.parcel_id;
+
+  GO
 
 
 UPDATE
@@ -154,7 +158,9 @@ FROM
     INNER JOIN UrbanSim.County_Dup_Parcels_Resolved_Centroid_Table AS t2
         ON t1.parcel_id = t2.parcel_id
 WHERE
-    t1.parcel_id = t2.parcel_id
+    t1.parcel_id = t2.parcel_id;
+
+  GO
 
 
 UPDATE
@@ -167,7 +173,9 @@ FROM
     INNER JOIN UrbanSim.County_Dup_Parcels_Resolved_Centroid_Table AS t2
         ON t1.parcel_id = t2.parcel_id
 WHERE
-    t1.parcel_id = t2.parcel_id
+    t1.parcel_id = t2.parcel_id;
+
+  GO
 
 
 UPDATE
@@ -180,7 +188,9 @@ FROM
     INNER JOIN UrbanSim.County_Dup_Parcels_Resolved_Centroid_Table AS t2
         ON t1.parcel_id = t2.parcel_id
 WHERE
-    t1.parcel_id = t2.parcel_id
+    t1.parcel_id = t2.parcel_id;;
+
+  GO
 
 --TODO: i may have overestimated the number of county duplicates 
 --because there are also tpa duplicates in the table, which i was not aware of
@@ -192,7 +202,12 @@ GOAL:
 a.       2015 and 2040 Dwelling Units per acre within TPAs
 b.       2015 and 2040 Employment/Jobs per acre within TPAs
 4. Quantify by County the acres of overlap between the Preferred Scenario’s (proposed Plan) land use footprint and transportation footprint.
-*/ ;
+*/
+
+GO
+
+DROP VIEW UrbanSim.Alt_4_Counties_TPAs_Density;
+
 GO
 create view UrbanSim.Alt_4_Counties_TPAs_Density as
 SELECT  t1.FID_Counties, t1.FID_TPAs, 
@@ -203,10 +218,13 @@ SELECT  t1.FID_Counties, t1.FID_TPAs,
 	                     t1.total_job_spaces AS total_job_spaces, 
 	                     t1.Acres AS Acres, 
 	                     t1.People_Per_Acre AS People_Per_Acre, 
-	                     t1.Jobs_Per_Acre AS Jobs_Per_Acre,
-	                     (t1.total_residential_units/t1.Acres) AS dwelling_units_per_acre
+	                     t1.Jobs_Per_Acre AS Jobs_Per_Acre
 FROM            UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY as t1
-WHERE t1.FID_TPAs = 1
+WHERE t1.FID_TPAs = 1;
+
+GO
+
+DROP VIEW UrbanSim.Alt_4_Counties_TPAs_Density_Distinct;
 
 GO
 ---next do a distinct on the above table to drop duplicates
@@ -214,7 +232,11 @@ GO
 create view UrbanSim.Alt_4_Counties_TPAs_Density_Distinct as
 SELECT  DISTINCT  *
 FROM            UrbanSim.Alt_4_Counties_TPAs_Density as t1
-WHERE t1.FID_TPAs = 1
+WHERE t1.FID_TPAs = 1;
+
+GO
+
+DROP VIEW UrbanSim.Alt_3_Counties_TPAs_Density;
 
 GO
 create view UrbanSim.Alt_3_Counties_TPAs_Density as
@@ -226,10 +248,12 @@ SELECT  t1.FID_Counties, t1.FID_TPAs,
 	                     t1.total_job_spaces AS total_job_spaces, 
 	                     t1.Acres AS Acres, 
 	                     t1.People_Per_Acre AS People_Per_Acre, 
-	                     t1.Jobs_Per_Acre AS Jobs_Per_Acre,
-	                     (t1.total_residential_units/t1.Acres) AS dwelling_units_per_acre
+	                     t1.Jobs_Per_Acre AS Jobs_Per_Acre
 FROM            UrbanSim.COUNTIES_TPAS_ALT_3_OVERLAY as t1
-WHERE t1.FID_TPAs = 1
+WHERE t1.FID_TPAs = 1;
+
+GO
+DROP VIEW UrbanSim.Alt_3_Counties_TPAs_Density_Distinct;
 
 GO
 ---next do a distinct on the above table to drop duplicates
@@ -237,7 +261,11 @@ GO
 create view UrbanSim.Alt_3_Counties_TPAs_Density_Distinct as
 SELECT  DISTINCT     *
 FROM            UrbanSim.Alt_3_Counties_TPAs_Density as t1
-WHERE t1.FID_TPAs = 1
+WHERE t1.FID_TPAs = 1;
+
+GO
+
+DROP VIEW UrbanSim.Alt_1_Counties_TPAs_Density;
 
 GO
 create view UrbanSim.Alt_1_Counties_TPAs_Density as
@@ -249,18 +277,22 @@ SELECT  DISTINCT t1.FID_Counties, t1.FID_TPAs,
 	                     t1.total_job_spaces AS total_job_spaces, 
 	                     t1.Acres AS Acres, 
 	                     t1.People_Per_Acre AS People_Per_Acre, 
-	                     t1.Jobs_Per_Acre AS Jobs_Per_Acre,
-	                     (t1.total_residential_units/t1.Acres) AS dwelling_units_per_acre
+	                     t1.Jobs_Per_Acre AS Jobs_Per_Acre
 FROM            UrbanSim.COUNTIES_TPAS_ALT_1_OVERLAY as t1
-WHERE t1.FID_TPAs = 1
+WHERE t1.FID_TPAs = 1;
 
 GO
----next do a distinct on the above table to drop duplicates
----THE QUERY BELOW NEEDS REVIEW
+DROP VIEW UrbanSim.Alt_1_Counties_TPAs_Density_Distinct;
+
+GO
 create view UrbanSim.Alt_1_Counties_TPAs_Density_Distinct as
 SELECT  DISTINCT  *
 FROM            UrbanSim.Alt_1_Counties_TPAs_Density as t1
-WHERE t1.FID_TPAs = 1
+WHERE t1.FID_TPAs = 1;
+
+GO
+
+DROP VIEW UrbanSim.Alt_5_Counties_TPAs_Density;
 
 GO
 create view UrbanSim.Alt_5_Counties_TPAs_Density as
@@ -272,17 +304,98 @@ SELECT  DISTINCT t1.FID_Counties, t1.FID_TPAs,
 	                     t1.total_job_spaces AS total_job_spaces, 
 	                     t1.Acres AS Acres, 
 	                     t1.People_Per_Acre AS People_Per_Acre, 
-	                     t1.Jobs_Per_Acre AS Jobs_Per_Acre,
-	                     (t1.total_residential_units/t1.Acres) AS dwelling_units_per_acre
+	                     t1.Jobs_Per_Acre AS Jobs_Per_Acre
 FROM            UrbanSim.COUNTIES_TPAS_ALT_5_OVERLAY as t1
-WHERE t1.FID_TPAs = 1
+WHERE t1.FID_TPAs = 1;
 
 GO
+DROP VIEW UrbanSim.Alt_5_Counties_TPAs_Density_Distinct;
+GO
+
 ---next do a distinct on the above table to drop duplicates
 ---THE QUERY BELOW NEEDS REVIEW
 create view UrbanSim.Alt_5_Counties_TPAs_Density_Distinct as
 SELECT  DISTINCT *
 FROM            UrbanSim.Alt_5_Counties_TPAs_Density as t1
-WHERE t1.FID_TPAs = 1
+WHERE t1.FID_TPAs = 1;
 
+GO
 
+/*
+GOAL:
+3.       Quantify by County the:
+a.       2015 and 2040 Dwelling Units per acre within TPAs
+b.       2015 and 2040 Employment/Jobs per acre within TPAs
+4. Quantify by County the acres of overlap between the Preferred Scenario’s (proposed Plan) land use footprint and transportation footprint.
+*/
+
+DROP VIEW UrbanSim.Alt_4_Density_Within_TPAS_By_County;
+GO
+CREATE VIEW UrbanSim.Alt_4_Density_Within_TPAS_By_County AS
+SELECT COUNTYNAME, SUM(t1.total_residential_units) AS sum_total_residential_units, 
+				   SUM(t1.total_job_spaces) AS sum_total_job_spaces, 
+	               SUM(t1.Acres) AS sum_Acres  
+FROM UrbanSim.Alt_4_Counties_TPAs_Density_Distinct as t1
+GROUP BY COUNTYNAME;
+GO
+DROP VIEW UrbanSim.Alt_3_Density_Within_TPAS_By_County;
+GO
+CREATE VIEW UrbanSim.Alt_3_Density_Within_TPAS_By_County AS
+SELECT COUNTYNAME, SUM(t1.total_residential_units) AS sum_total_residential_units, 
+				   SUM(t1.total_job_spaces) AS sum_total_job_spaces, 
+	               SUM(t1.Acres) AS sum_Acres  
+FROM UrbanSim.Alt_3_Counties_TPAs_Density_Distinct as t1
+GROUP BY COUNTYNAME;
+GO
+DROP VIEW UrbanSim.Alt_5_Density_Within_TPAS_By_County;
+GO
+CREATE VIEW UrbanSim.Alt_5_Density_Within_TPAS_By_County AS
+SELECT COUNTYNAME, SUM(t1.total_residential_units) AS sum_total_residential_units, 
+				   SUM(t1.total_job_spaces) AS sum_total_job_spaces, 
+	               SUM(t1.Acres) AS sum_Acres  
+FROM UrbanSim.Alt_5_Counties_TPAs_Density_Distinct as t1
+GROUP BY COUNTYNAME;
+GO
+DROP VIEW UrbanSim.Alt_1_Density_Within_TPAS_By_County;
+GO
+CREATE VIEW UrbanSim.Alt_1_Density_Within_TPAS_By_County AS
+SELECT COUNTYNAME, SUM(t1.total_residential_units) AS sum_total_residential_units, 
+				   SUM(t1.total_job_spaces) AS sum_total_job_spaces, 
+	               SUM(t1.Acres) AS sum_Acres  
+FROM UrbanSim.Alt_1_Counties_TPAs_Density_Distinct as t1
+GROUP BY COUNTYNAME;
+
+--Convert Negatives to Zeros
+----
+
+DROP VIEW UrbanSim.Alt_4_Density_Within_TPAS_By_County_No_Zero;
+GO
+CREATE VIEW UrbanSim.Alt_4_Density_Within_TPAS_By_County_No_Zero AS
+SELECT COUNTYNAME, CASE WHEN t1.sum_total_residential_units < 0 THEN 0 ELSE t1.sum_total_residential_units END AS sum_total_residential_units, 
+				   CASE WHEN t1.sum_total_job_spaces < 0 THEN 0 ELSE t1.sum_total_job_spaces END AS sum_total_job_spaces, 
+	               CASE WHEN t1.sum_Acres < 0 THEN 0 ELSE t1.sum_Acres END AS sum_Acres  
+FROM UrbanSim.Alt_4_Density_Within_TPAS_By_County as t1;
+GO
+DROP VIEW UrbanSim.Alt_3_Density_Within_TPAS_By_County_No_Zero;
+GO
+CREATE VIEW UrbanSim.Alt_3_Density_Within_TPAS_By_County_No_Zero AS
+SELECT COUNTYNAME, CASE WHEN t1.sum_total_residential_units < 0 THEN 0 ELSE t1.sum_total_residential_units END AS sum_total_residential_units, 
+				   CASE WHEN t1.sum_total_job_spaces < 0 THEN 0 ELSE t1.sum_total_job_spaces END AS sum_total_job_spaces, 
+	               CASE WHEN t1.sum_Acres < 0 THEN 0 ELSE t1.sum_Acres END AS sum_Acres  
+FROM UrbanSim.Alt_3_Density_Within_TPAS_By_County as t1;
+GO
+DROP VIEW UrbanSim.Alt_5_Density_Within_TPAS_By_County_No_Zero;
+GO
+CREATE VIEW UrbanSim.Alt_5_Density_Within_TPAS_By_County_No_Zero AS
+SELECT COUNTYNAME, CASE WHEN t1.sum_total_residential_units < 0 THEN 0 ELSE t1.sum_total_residential_units END AS sum_total_residential_units, 
+				   CASE WHEN t1.sum_total_job_spaces < 0 THEN 0 ELSE t1.sum_total_job_spaces END AS sum_total_job_spaces, 
+	               CASE WHEN t1.sum_Acres < 0 THEN 0 ELSE t1.sum_Acres END AS sum_Acres  
+FROM UrbanSim.Alt_5_Density_Within_TPAS_By_County as t1;
+GO
+DROP VIEW UrbanSim.Alt_1_Density_Within_TPAS_By_County_No_Zero;
+GO
+CREATE VIEW UrbanSim.Alt_1_Density_Within_TPAS_By_County_No_Zero AS
+SELECT COUNTYNAME, CASE WHEN t1.sum_total_residential_units < 0 THEN 0 ELSE t1.sum_total_residential_units END AS sum_total_residential_units, 
+				   CASE WHEN t1.sum_total_job_spaces < 0 THEN 0 ELSE t1.sum_total_job_spaces END AS sum_total_job_spaces, 
+	               CASE WHEN t1.sum_Acres < 0 THEN 0 ELSE t1.sum_Acres END AS sum_Acres  
+FROM UrbanSim.Alt_1_Density_Within_TPAS_By_County as t1;
