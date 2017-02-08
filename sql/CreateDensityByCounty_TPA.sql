@@ -15,36 +15,6 @@ Jobs_Per_Acre
 from UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY
 Order By parcel_id
 Go
-/*
-GOAL:
-3.       Quantify by County the:
-a.       2015 and 2040 Dwelling Units per acre within TPAs
-b.       2015 and 2040 Employment/Jobs per acre within TPAs
-4. Quantify by County the acres of overlap between the Preferred Scenario’s (proposed Plan) land use footprint and transportation footprint.
-*/ 
-create view UrbanSim.Alt_4_Counties_TPAs_Density as
-SELECT  Top 50000      t1.FID_Counties, t1.FID_TPAs, 
-	                     t1.COUNTYNAME, t1.CountyFIP, 
-	                     t1.parcel_id, 
-	                     t1.Estimated_Population AS Estimated_Population,
-	                     t1.total_residential_units AS total_residential_units, 
-	                     t1.total_job_spaces AS total_job_spaces, 
-	                     t1.Acres AS Acres, 
-	                     t1.People_Per_Acre AS People_Per_Acre, 
-	                     t1.Jobs_Per_Acre AS Jobs_Per_Acre,
-	                     (t1.total_residential_units/t1.Acres) AS dwelling_units_per_acre
-FROM            UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY_NO_DUPS as t1
-WHERE t1.FID_TPAs = 1
-ORDER BY t1.parcel_id
-
----next do a distinct on the above table to drop duplicates
----THE QUERY BELOW NEEDS REVIEW
-create view UrbanSim.Alt_4_Counties_TPAs_Density as
-SELECT  Top DISTINCT     *
-FROM            UrbanSim.Alt_4_Counties_TPAs_Density as t1
-WHERE t1.FID_TPAs = 1
-ORDER BY t1.parcel_id
-
 
 Go
 --Drop view UrbanSim.Dup_GrowthParcels 
@@ -97,6 +67,9 @@ ON
 		t2.PointOnSurface.STWithin(t3.Shape) = 1
 
 ---then one thats based on both POS and centroid
+--this was required because on visual check, POS 
+--often seems to stick points on the edges or near
+--reulting in non-representative intersections
 CREATE VIEW UrbanSim.County_Dup_Parcels_Resolved_Centroid AS
 SELECT 
 		t2.parcel_id, t3.COUNTYNAME, t3.CountyFIP
@@ -141,7 +114,8 @@ c.CountyFIP = p.COUNTY_ID AND
 t1.parcel_id <> 1311950
 ) q4
 
----only 1 was incorrect (in the Parcels table)
+---only 1 was incorrect on visual inspection on the map 
+--(comparing its Parcels table value to its actual placement on the map)
 go
 INSERT INTO UrbanSim.County_Dup_Parcels_Resolved_Centroid_Table (parcel_id, COUNTYNAME,
     CountyFIP)
@@ -156,39 +130,159 @@ SELECT
 FROM 
 		UrbanSim.County_Dup_Parcels_Resolved_Centroid
 
+--update the county assignments for parcels with duplicate entries
+UPDATE
+    t1
+SET
+    t1.COUNTYNAME = t2.COUNTYNAME,
+    t1.CountyFIP = t2.CountyFIP
+FROM
+	UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY AS t1
+    INNER JOIN UrbanSim.County_Dup_Parcels_Resolved_Centroid_Table AS t2
+        ON t1.parcel_id = t2.parcel_id
+WHERE
+    t1.parcel_id = t2.parcel_id
+
+
+UPDATE
+    t1
+SET
+    t1.COUNTYNAME = t2.COUNTYNAME,
+    t1.CountyFIP = t2.CountyFIP
+FROM
+	UrbanSim.COUNTIES_TPAS_ALT_1_OVERLAY AS t1
+    INNER JOIN UrbanSim.County_Dup_Parcels_Resolved_Centroid_Table AS t2
+        ON t1.parcel_id = t2.parcel_id
+WHERE
+    t1.parcel_id = t2.parcel_id
+
+
+UPDATE
+    t1
+SET
+    t1.COUNTYNAME = t2.COUNTYNAME,
+    t1.CountyFIP = t2.CountyFIP
+FROM
+	UrbanSim.COUNTIES_TPAS_ALT_3_OVERLAY AS t1
+    INNER JOIN UrbanSim.County_Dup_Parcels_Resolved_Centroid_Table AS t2
+        ON t1.parcel_id = t2.parcel_id
+WHERE
+    t1.parcel_id = t2.parcel_id
+
+
+UPDATE
+    t1
+SET
+    t1.COUNTYNAME = t2.COUNTYNAME,
+    t1.CountyFIP = t2.CountyFIP
+FROM
+	UrbanSim.COUNTIES_TPAS_ALT_5_OVERLAY AS t1
+    INNER JOIN UrbanSim.County_Dup_Parcels_Resolved_Centroid_Table AS t2
+        ON t1.parcel_id = t2.parcel_id
+WHERE
+    t1.parcel_id = t2.parcel_id
+
+--TODO: i may have overestimated the number of county duplicates 
+--because there are also tpa duplicates in the table, which i was not aware of
+--however, the above should still resolve the county duplicates, so we can move on
+
 /*
---this is probably no longer in use
---example subquery to select parcels NOT in the resolved duplicates table
---we can use this idiom to exclude duplicate parcels from any table
-create view UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY_dups  
-select t.* 
-FROM UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY t1,
-UrbanSim.County_Dup_Parcels_Resolved_Centroid_Table t2
-WHERE t1.parcel_id = t2.parcel_id and
-t2.countyFIP <> t1.countyFIP
-
-select count(*) from 
-UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY_NO_DUPS t1*/
-
-
---Check on how to delete duplicates from above:
-SELECT q6.* INTO UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY_TEST FROM (
-SELECT * FROM 
-UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY) q6
-
-DELETE UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY_TEST 
-  FROM UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY_TEST as t1
-  INNER JOIN UrbanSim.County_Dup_Parcels_Resolved_Centroid_Table as t2
-  ON t1.parcel_id = t2.parcel_id
-  AND t1.CountyFIP <> t2.CountyFip;
-
-
-DROP VIEW UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY_NO_DUPS_CHECK;
+GOAL:
+3.       Quantify by County the:
+a.       2015 and 2040 Dwelling Units per acre within TPAs
+b.       2015 and 2040 Employment/Jobs per acre within TPAs
+4. Quantify by County the acres of overlap between the Preferred Scenario’s (proposed Plan) land use footprint and transportation footprint.
+*/ ;
 GO
-CREATE VIEW UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY_NO_DUPS_check AS
-select t1.* FROM UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY t1,
-UrbanSim.County_Dup_Parcels_Resolved t2
-WHERE 
-t1.parcel_id = t2.parcel_id
-and t2.countyFIP <> t1.countyFIP
+create view UrbanSim.Alt_4_Counties_TPAs_Density as
+SELECT  t1.FID_Counties, t1.FID_TPAs, 
+	                     t1.COUNTYNAME, t1.CountyFIP, 
+	                     t1.parcel_id, 
+	                     t1.Estimated_Population AS Estimated_Population,
+	                     t1.total_residential_units AS total_residential_units, 
+	                     t1.total_job_spaces AS total_job_spaces, 
+	                     t1.Acres AS Acres, 
+	                     t1.People_Per_Acre AS People_Per_Acre, 
+	                     t1.Jobs_Per_Acre AS Jobs_Per_Acre,
+	                     (t1.total_residential_units/t1.Acres) AS dwelling_units_per_acre
+FROM            UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY as t1
+WHERE t1.FID_TPAs = 1
+
+GO
+---next do a distinct on the above table to drop duplicates
+---THE QUERY BELOW NEEDS REVIEW
+create view UrbanSim.Alt_4_Counties_TPAs_Density_Distinct as
+SELECT  DISTINCT  *
+FROM            UrbanSim.Alt_4_Counties_TPAs_Density as t1
+WHERE t1.FID_TPAs = 1
+
+GO
+create view UrbanSim.Alt_3_Counties_TPAs_Density as
+SELECT  t1.FID_Counties, t1.FID_TPAs, 
+	                     t1.COUNTYNAME, t1.CountyFIP, 
+	                     t1.parcel_id, 
+	                     t1.Estimated_Population AS Estimated_Population,
+	                     t1.total_residential_units AS total_residential_units, 
+	                     t1.total_job_spaces AS total_job_spaces, 
+	                     t1.Acres AS Acres, 
+	                     t1.People_Per_Acre AS People_Per_Acre, 
+	                     t1.Jobs_Per_Acre AS Jobs_Per_Acre,
+	                     (t1.total_residential_units/t1.Acres) AS dwelling_units_per_acre
+FROM            UrbanSim.COUNTIES_TPAS_ALT_3_OVERLAY as t1
+WHERE t1.FID_TPAs = 1
+
+GO
+---next do a distinct on the above table to drop duplicates
+---THE QUERY BELOW NEEDS REVIEW
+create view UrbanSim.Alt_3_Counties_TPAs_Density_Distinct as
+SELECT  DISTINCT     *
+FROM            UrbanSim.Alt_3_Counties_TPAs_Density as t1
+WHERE t1.FID_TPAs = 1
+
+GO
+create view UrbanSim.Alt_1_Counties_TPAs_Density as
+SELECT  DISTINCT t1.FID_Counties, t1.FID_TPAs, 
+	                     t1.COUNTYNAME, t1.CountyFIP, 
+	                     t1.parcel_id, 
+	                     t1.Estimated_Population AS Estimated_Population,
+	                     t1.total_residential_units AS total_residential_units, 
+	                     t1.total_job_spaces AS total_job_spaces, 
+	                     t1.Acres AS Acres, 
+	                     t1.People_Per_Acre AS People_Per_Acre, 
+	                     t1.Jobs_Per_Acre AS Jobs_Per_Acre,
+	                     (t1.total_residential_units/t1.Acres) AS dwelling_units_per_acre
+FROM            UrbanSim.COUNTIES_TPAS_ALT_1_OVERLAY as t1
+WHERE t1.FID_TPAs = 1
+
+GO
+---next do a distinct on the above table to drop duplicates
+---THE QUERY BELOW NEEDS REVIEW
+create view UrbanSim.Alt_1_Counties_TPAs_Density_Distinct as
+SELECT  DISTINCT  *
+FROM            UrbanSim.Alt_1_Counties_TPAs_Density as t1
+WHERE t1.FID_TPAs = 1
+
+GO
+create view UrbanSim.Alt_5_Counties_TPAs_Density as
+SELECT  DISTINCT t1.FID_Counties, t1.FID_TPAs, 
+	                     t1.COUNTYNAME, t1.CountyFIP, 
+	                     t1.parcel_id, 
+	                     t1.Estimated_Population AS Estimated_Population,
+	                     t1.total_residential_units AS total_residential_units, 
+	                     t1.total_job_spaces AS total_job_spaces, 
+	                     t1.Acres AS Acres, 
+	                     t1.People_Per_Acre AS People_Per_Acre, 
+	                     t1.Jobs_Per_Acre AS Jobs_Per_Acre,
+	                     (t1.total_residential_units/t1.Acres) AS dwelling_units_per_acre
+FROM            UrbanSim.COUNTIES_TPAS_ALT_5_OVERLAY as t1
+WHERE t1.FID_TPAs = 1
+
+GO
+---next do a distinct on the above table to drop duplicates
+---THE QUERY BELOW NEEDS REVIEW
+create view UrbanSim.Alt_5_Counties_TPAs_Density_Distinct as
+SELECT  DISTINCT *
+FROM            UrbanSim.Alt_5_Counties_TPAs_Density as t1
+WHERE t1.FID_TPAs = 1
+
 
