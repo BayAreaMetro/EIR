@@ -327,7 +327,23 @@ GOAL:
 a.       2015 and 2040 Dwelling Units per acre within TPAs
 b.       2015 and 2040 Employment/Jobs per acre within TPAs
 4. Quantify by County the acres of overlap between the Preferred Scenario’s (proposed Plan) land use footprint and transportation footprint.
+
+For example:
+
+County|Residential Units in TPA's in 2015|Residential Units in TPA's in 2040|
+------|----------------------------------|----------------------------------|
+Alameda|300|400|
+Marin|100|100|
+
+total_residential_units is sourced from the "Diff" table so it doesn't give us either of the above directly. 
+however, we can back the values for 2015 out of the subtraction of the diff values from the 2040 counts.
+
+so, we'll insert that logic below and then output the summary table as spec'ed above.
+
 */
+
+
+
 
 DROP VIEW UrbanSim.Alt_4_Density_Within_TPAS_By_County;
 GO
