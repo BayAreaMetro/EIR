@@ -341,9 +341,50 @@ however, we can back the values for 2015 out of the subtraction of the diff valu
 so, we'll insert that logic below and then output the summary table as spec'ed above.
 
 */
+GO
+create view UrbanSim.Alt_4_Counties_TPAs_Density as
+SELECT  DISTINCT t1.FID_Counties, t1.FID_TPAs, 
+	                     t1.COUNTYNAME, t1.CountyFIP, 
+	                     t1.parcel_id, 
+	                     t1.Estimated_Population AS Estimated_Population,
+	                     t1.total_residential_units AS total_residential_units, 
+	                     t1.total_job_spaces AS total_job_spaces, 
+	                     t1.Acres AS Acres, 
+	                     t1.People_Per_Acre AS People_Per_Acre, 
+	                     t1.Jobs_Per_Acre AS Jobs_Per_Acre
+FROM            UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY as t1
+WHERE t1.FID_TPAs = 1;
 
+---based on table creation in Build_Alternative_4_Footprint file...
+create view UrbanSim.Alt_4_2040_parcel_units_and_jobs_total as
+SELECT
+	Cast(2.69*y2040.total_residential_units as numeric(18,0)) as Estimated_Population, 
+	Cast(y2040.total_residential_units as numeric(18,0)) as total_residential_units, 
+	y2040.total_job_spaces, 
+	Round(p.shape.STArea()*0.000247105381,2) as Acres,
+	Cast((2.69*y2040.total_residential_units)/(p.shape.STArea()*0.000247105381) as numeric(18,2)) as People_Per_Acre,
+	Cast((y2040.total_job_spaces/(p.shape.STArea()*0.000247105381)) as numeric(18,2)) as Jobs_Per_Acre,
+FROM            
+	UrbanSim.Parcels AS p ON y2040.parcel_id = p.PARCEL_ID JOIN
+	UrbanSim.RUN7224_PARCEL_DATA_2040 AS y2040 ON p.PARCEL_ID = y2040.parcel_id
+Go
 
+create view UrbanSim.Alt_4_2040_parcel_units_and_jobs_total as
+SELECT
+	y2040.Estimated_Population-t1.Estimated_Population,
+	y2040.total_residential_units-t1.total_residential_units, 
+	y2040.total_job_spaces-t1.total_job_spaces,
+	y2040.Acres-t1.Acres,
+	y2040.People_Per_Acre-t1.People_Per_Acre,
+	y2040.Jobs_Per_Acre-t1.Jobs_Per_Acre,
+FROM            
+	UrbanSim.Alt_4_Counties_TPAs_Density as t1 JOIN
+	UrbanSim.Alt_4_2040_parcel_units_and_jobs_total AS y2040 ON p.PARCEL_ID = y2040.parcel_id
+Go
 
+-----------------------
+---county summary tables
+---------------------
 
 DROP VIEW UrbanSim.Alt_4_Density_Within_TPAS_By_County;
 GO
