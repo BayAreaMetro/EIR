@@ -188,7 +188,7 @@ FROM
     INNER JOIN UrbanSim.County_Dup_Parcels_Resolved_Centroid_Table AS t2
         ON t1.parcel_id = t2.parcel_id
 WHERE
-    t1.parcel_id = t2.parcel_id;;
+    t1.parcel_id = t2.parcel_id;
 
   GO
 
@@ -382,9 +382,78 @@ FROM
 	UrbanSim.Alt_4_2040_parcel_units_and_jobs_total AS y2040 ON p.PARCEL_ID = y2040.parcel_id
 Go
 
+create view UrbanSim.Alt_4_2040_parcel_units_and_jobs_total as
+SELECT
+	y2040.Estimated_Population-t1.Estimated_Population,
+	y2040.total_residential_units-t1.total_residential_units, 
+	y2040.total_job_spaces-t1.total_job_spaces,
+	y2040.Acres-t1.Acres,
+	y2040.People_Per_Acre-t1.People_Per_Acre,
+	y2040.Jobs_Per_Acre-t1.Jobs_Per_Acre,
+FROM            
+	UrbanSim.Alt_4_Counties_TPAs_Density as t1 JOIN
+	UrbanSim.Alt_4_2040_parcel_units_and_jobs_total AS y2040 ON p.PARCEL_ID = y2040.parcel_id
+Go
+
+--we need to know the TPA for every parcel
+--So, first we need to assign a TPA value to each parcel
+
+--the UrbanSim.parcels table doesn't have any indexes, 
+--so in the interest of expediency, we use an existing parcels
+--table that has indexes from the Analysis schema
+---we can always come back and setup the UrbanSim.Parcels table later
+
+SELECT q1.* INTO UrbanSim.Parcels_Centroid_Only FROM (
+SELECT p1.parcel_id as parcel_id, 
+p1.Shape.STCentroid() as Centroid
+FROM Analysis.p09_01_2015_parcel_shareable as p1) q1
+
+GO
+---
+ALTER TABLE UrbanSim.Parcels_Centroid_Only ALTER COLUMN parcel_id INTEGER NOT NULL
+--
+ALTER TABLE UrbanSim.Parcels_Centroid_Only ADD CONSTRAINT parcel_id_pk
+ PRIMARY KEY CLUSTERED (parcel_id);
+
+GO
+--from https://alastaira.wordpress.com/2011/07/26/determining-the-geographic-extent-of-spatial-features-in-a-sql-server-table/
+SELECT
+  geometry::EnvelopeAggregate(Shape).STPointN(1).STX AS MinX,
+  geometry::EnvelopeAggregate(Shape).STPointN(1).STY AS MinY,
+  geometry::EnvelopeAggregate(Shape).STPointN(3).STX AS MaxX,
+  geometry::EnvelopeAggregate(Shape).STPointN(3).STY AS MaxY
+FROM Analysis.p09_01_2015_parcel_shareable;
+
+GO
+--result: 453705.104767737	4083961.21954119		
+
+--xmin=0, ymin=0, xmax=500, ymax=200
+CREATE SPATIAL INDEX SIndx_Parcels_Centroid_Only_Centroid_idx   
+   ON UrbanSim.Parcels_Centroid_Only(Centroid)  
+   WITH ( BOUNDING_BOX = ( 453705.104767737, 4083961.21954119, 659289.046884376, 4301890.14477043 ) );  
+
+GO
+ALTER TABLE UrbanSim.Parcels_Centroid_Only ADD tpa_objectid INTEGER NULL;  
+
+GO
+UPDATE
+    t1
+SET
+    t1.tpa_objectid = t2.OBJECTID
+FROM
+    UrbanSim.Parcels_Centroid_Only AS t1
+INNER JOIN
+	Transportation.TPAS_2016 AS t2
+ON 
+	t1.Centroid.STWithin(t2.SHAPE) = 1;
+
+GO
+
+/****** Script for SelectTopNRows command from SSMS  ******/
+
 -----------------------
 ---county summary tables
----------------------
+-----------------------
 
 DROP VIEW UrbanSim.Alt_4_Density_Within_TPAS_By_County;
 GO
