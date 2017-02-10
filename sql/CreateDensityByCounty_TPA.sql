@@ -355,45 +355,7 @@ SELECT  DISTINCT t1.FID_Counties, t1.FID_TPAs,
 FROM            UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY as t1
 WHERE t1.FID_TPAs = 1;
 
----based on table creation in Build_Alternative_4_Footprint file...
-create view UrbanSim.Alt_4_2040_parcel_units_and_jobs_total as
-SELECT
-	Cast(2.69*y2040.total_residential_units as numeric(18,0)) as Estimated_Population, 
-	Cast(y2040.total_residential_units as numeric(18,0)) as total_residential_units, 
-	y2040.total_job_spaces, 
-	Round(p.shape.STArea()*0.000247105381,2) as Acres,
-	Cast((2.69*y2040.total_residential_units)/(p.shape.STArea()*0.000247105381) as numeric(18,2)) as People_Per_Acre,
-	Cast((y2040.total_job_spaces/(p.shape.STArea()*0.000247105381)) as numeric(18,2)) as Jobs_Per_Acre,
-FROM            
-	UrbanSim.Parcels AS p ON y2040.parcel_id = p.PARCEL_ID JOIN
-	UrbanSim.RUN7224_PARCEL_DATA_2040 AS y2040 ON p.PARCEL_ID = y2040.parcel_id
-Go
 
-create view UrbanSim.Alt_4_2040_parcel_units_and_jobs_total as
-SELECT
-	y2040.Estimated_Population-t1.Estimated_Population,
-	y2040.total_residential_units-t1.total_residential_units, 
-	y2040.total_job_spaces-t1.total_job_spaces,
-	y2040.Acres-t1.Acres,
-	y2040.People_Per_Acre-t1.People_Per_Acre,
-	y2040.Jobs_Per_Acre-t1.Jobs_Per_Acre,
-FROM            
-	UrbanSim.Alt_4_Counties_TPAs_Density as t1 JOIN
-	UrbanSim.Alt_4_2040_parcel_units_and_jobs_total AS y2040 ON p.PARCEL_ID = y2040.parcel_id
-Go
-
-create view UrbanSim.Alt_4_2040_parcel_units_and_jobs_total as
-SELECT
-	y2040.Estimated_Population-t1.Estimated_Population,
-	y2040.total_residential_units-t1.total_residential_units, 
-	y2040.total_job_spaces-t1.total_job_spaces,
-	y2040.Acres-t1.Acres,
-	y2040.People_Per_Acre-t1.People_Per_Acre,
-	y2040.Jobs_Per_Acre-t1.Jobs_Per_Acre,
-FROM            
-	UrbanSim.Alt_4_Counties_TPAs_Density as t1 JOIN
-	UrbanSim.Alt_4_2040_parcel_units_and_jobs_total AS y2040 ON p.PARCEL_ID = y2040.parcel_id
-Go
 
 --we need to know the TPA for every parcel
 --So, first we need to assign a TPA value to each parcel
@@ -416,6 +378,7 @@ ALTER TABLE UrbanSim.Parcels_Centroid_Only ADD CONSTRAINT parcel_id_pk
  PRIMARY KEY CLUSTERED (parcel_id);
 
 GO
+--Get the required bounding box for the spatial index below
 --from https://alastaira.wordpress.com/2011/07/26/determining-the-geographic-extent-of-spatial-features-in-a-sql-server-table/
 SELECT
   geometry::EnvelopeAggregate(Shape).STPointN(1).STX AS MinX,
@@ -431,7 +394,6 @@ GO
 CREATE SPATIAL INDEX SIndx_Parcels_Centroid_Only_Centroid_idx   
    ON UrbanSim.Parcels_Centroid_Only(Centroid)  
    WITH ( BOUNDING_BOX = ( 453705.104767737, 4083961.21954119, 659289.046884376, 4301890.14477043 ) );  
-
 GO
 ALTER TABLE UrbanSim.Parcels_Centroid_Only ADD tpa_objectid INTEGER NULL;  
 
@@ -446,10 +408,95 @@ INNER JOIN
 	Transportation.TPAS_2016 AS t2
 ON 
 	t1.Centroid.STWithin(t2.SHAPE) = 1;
-
 GO
 
-/****** Script for SelectTopNRows command from SSMS  ******/
+GO
+--result: 453705.104767737	4083961.21954119		
+
+--it will be cleaner in the future to just set up the parcels table
+--as the main one with all the variables, 
+--so might as well do so
+
+CREATE INDEX parcel_id_idx ON UrbanSim.Parcels (parcel_id); 
+
+ALTER TABLE UrbanSim.Parcels ADD CONSTRAINT parcels_objectid_idx
+ PRIMARY KEY CLUSTERED (OBJECTID);
+
+--xmin=0, ymin=0, xmax=500, ymax=200
+CREATE SPATIAL INDEX SIndx_Parcels_Poly   
+   ON UrbanSim.Parcels(Shape)  
+   WITH ( BOUNDING_BOX = ( 453705.104767737, 4083961.21954119, 659289.046884376, 4301890.14477043 ) );  
+
+ALTER TABLE UrbanSim.Parcels ADD tpa_objectid INTEGER NULL;  
+
+GO
+UPDATE
+    t1
+SET
+    t1.tpa_objectid = t2.tpa_objectid
+FROM
+    UrbanSim.Parcels AS t1
+INNER JOIN
+	UrbanSim.Parcels_Centroid_Only AS t2
+ON 
+	t1.parcel_id = t2.parcel_id;
+GO
+
+ALTER TABLE UrbanSim.Parcels_Centroid_Only
+DROP COLUMN "tpa_objectid";
+
+-----------------
+
+---based on table creation in Build_Alternative_4_Footprint file
+---because alt_4 is the preferred scenario--we will use it as the 
+---baseline for 2015
+---in theory the scenarios should all be the same for 2015
+---but in practice the preferred has had th most review
+---and so is probably the most accurate
+
+create view UrbanSim.Alt_4_2040_parcels_in_tpas_units_and_jobs as
+SELECT
+	p.COUNTY_ID,
+	p.parcel_id,
+	Cast(2.69*y2040.total_residential_units as numeric(18,0)) as Estimated_Population, 
+	Cast(y2040.total_residential_units as numeric(18,0)) as total_residential_units, 
+	y2040.total_job_spaces, 
+	Round(p.shape.STArea()*0.000247105381,2) as Acres,
+	Cast((2.69*y2040.total_residential_units)/(p.shape.STArea()*0.000247105381) as numeric(18,2)) as People_Per_Acre,
+	Cast((y2040.total_job_spaces/(p.shape.STArea()*0.000247105381)) as numeric(18,2)) as Jobs_Per_Acre
+FROM            
+	(SELECT * FROM UrbanSim.Parcels WHERE tpa_objectid IS NOT NULL) AS p JOIN
+	UrbanSim.RUN7224_PARCEL_DATA_2040 AS y2040 ON p.PARCEL_ID = y2040.parcel_id
+	--alt_4 is based on simulation run 7224
+Go
+
+
+DROP view UrbanSim.Alt_4_2015_and_2040_parcel_units_and_jobs_in_tpas_by_parcel;
+GO
+create view UrbanSim.Alt_4_2015_and_2040_parcel_units_and_jobs_in_tpas_by_parcel as
+SELECT
+	y2040.parcel_id,
+	y2040.COUNTY_ID,
+	y2040.Acres,
+	y2040.total_residential_units as residential_units_estimate_2040,
+	y2040.total_job_spaces as job_spaces_estimate_2040,
+		(y2040.total_residential_units-
+		CASE WHEN t1.total_residential_units 
+			IS NULL THEN 0 ELSE 
+			t1.total_residential_units END) 
+	AS residential_units_estimate_2015, 
+		(y2040.total_job_spaces-
+		CASE WHEN t1.total_job_spaces 
+			IS NULL THEN 0 ELSE 
+			t1.total_job_spaces END) 
+	AS job_spaces_estimate_2015
+	--y2040.Acres-t1.Acres as acres_estimate_2015,
+FROM            
+	UrbanSim.Alt_4_2040_parcels_in_tpas_units_and_jobs AS y2040 LEFT JOIN 
+	UrbanSim.Alt_4_Counties_TPAs_Density as t1 ON t1.parcel_id = y2040.parcel_id
+Go
+
+
 
 -----------------------
 ---county summary tables
