@@ -505,11 +505,13 @@ Go
 DROP VIEW UrbanSim.Alt_4_Density_Within_TPAS_By_County;
 GO
 CREATE VIEW UrbanSim.Alt_4_Density_Within_TPAS_By_County AS
-SELECT COUNTYNAME, SUM(t1.total_residential_units) AS sum_total_residential_units, 
-				   SUM(t1.total_job_spaces) AS sum_total_job_spaces, 
+SELECT COUNTY_ID, SUM(t1.residential_units_estimate_2015) AS sum_residential_units_estimate_2015, 
+				   SUM(t1.job_spaces_estimate_2015) AS sum_job_spaces_estimate_2015,
+				   SUM(t1.residential_units_estimate_2040) AS sum_residential_units_estimate_2040, 
+				   SUM(t1.job_spaces_estimate_2040) AS sum_job_spaces_estimate_2040, 
 	               SUM(t1.Acres) AS sum_Acres  
-FROM UrbanSim.Alt_4_Counties_TPAs_Density_Distinct as t1
-GROUP BY COUNTYNAME;
+FROM UrbanSim.Alt_4_2015_and_2040_parcel_units_and_jobs_in_tpas_by_parcel as t1
+GROUP BY COUNTY_ID;
 GO
 DROP VIEW UrbanSim.Alt_3_Density_Within_TPAS_By_County;
 GO
