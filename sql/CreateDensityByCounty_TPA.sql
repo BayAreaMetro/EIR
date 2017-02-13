@@ -663,10 +663,10 @@ GROUP BY COUNTY_ID;
 DROP VIEW UrbanSim.Alt_4_Density_Within_TPAS_By_County_No_Zero;
 GO
 CREATE VIEW UrbanSim.Alt_4_Density_Within_TPAS_By_County_No_Zero AS
-SELECT COUNTYNAME, CASE WHEN t1.sum_residential_units_estimate_2015 < 0 THEN 0 ELSE t1.sum_residential_units_estimate_2015 END AS sum_residential_units_estimate_2015, 
-				   CASE WHEN t1.sum_job_spaces_estimate_2015 < 0 THEN 0 ELSE t1.sum_job_spaces_estimate_2015 END AS sum_job_spaces_estimate_2015, 
-				   CASE WHEN t1.sum_residential_units_estimate_2040 < 0 THEN 0 ELSE t1.sum_residential_units_estimate_2040 END AS sum_residential_units_estimate_2040, 
-				   CASE WHEN t1.sum_job_spaces_estimate_2040 < 0 THEN 0 ELSE t1.sum_job_spaces_estimate_2040 END AS sum_job_spaces_estimate_2040, 
+SELECT COUNTYNAME, CASE WHEN t1.sum_residential_units_estimate_2015 > t1.sum_residential_units_estimate_2040 THEN t1.sum_residential_units_estimate_2015 ELSE t1.sum_residential_units_estimate_2040 END AS sum_residential_units_estimate_2040, 
+				   t1.sum_job_spaces_estimate_2015 AS sum_job_spaces_estimate_2015, 
+				   t1.sum_residential_units_estimate_2015 AS sum_residential_units_estimate_2015, 
+				   CASE WHEN t1.sum_job_spaces_estimate_2040 < t1.sum_job_spaces_estimate_2015 THEN t1.sum_job_spaces_estimate_2015 ELSE t1.sum_job_spaces_estimate_2040 END AS sum_job_spaces_estimate_2040, 
 	               CASE WHEN t1.sum_acres < 0 THEN 0 ELSE t1.sum_acres END AS sum_acres  
 FROM UrbanSim.Alt_4_Density_Within_TPAS_By_County as t1 INNER JOIN
 dbo.Counties as t2 ON 
@@ -675,10 +675,10 @@ GO
 DROP VIEW UrbanSim.Alt_3_Density_Within_TPAS_By_County_No_Zero;
 GO
 CREATE VIEW UrbanSim.Alt_3_Density_Within_TPAS_By_County_No_Zero AS
-SELECT COUNTYNAME, CASE WHEN t1.sum_residential_units_estimate_2015 < 0 THEN 0 ELSE t1.sum_residential_units_estimate_2015 END AS sum_residential_units_estimate_2015, 
-				   CASE WHEN t1.sum_job_spaces_estimate_2015 < 0 THEN 0 ELSE t1.sum_job_spaces_estimate_2015 END AS sum_job_spaces_estimate_2015, 
-				   CASE WHEN t1.sum_residential_units_estimate_2040 < 0 THEN 0 ELSE t1.sum_residential_units_estimate_2040 END AS sum_residential_units_estimate_2040, 
-				   CASE WHEN t1.sum_job_spaces_estimate_2040 < 0 THEN 0 ELSE t1.sum_job_spaces_estimate_2040 END AS sum_job_spaces_estimate_2040, 
+SELECT COUNTYNAME, CASE WHEN t1.sum_residential_units_estimate_2015 > t1.sum_residential_units_estimate_2040 THEN t1.sum_residential_units_estimate_2015 ELSE t1.sum_residential_units_estimate_2040 END AS sum_residential_units_estimate_2040, 
+				   t1.sum_job_spaces_estimate_2015 AS sum_job_spaces_estimate_2015, 
+				   t1.sum_residential_units_estimate_2015 AS sum_residential_units_estimate_2015, 
+				   CASE WHEN t1.sum_job_spaces_estimate_2040 < t1.sum_job_spaces_estimate_2015 THEN t1.sum_job_spaces_estimate_2015 ELSE t1.sum_job_spaces_estimate_2040 END AS sum_job_spaces_estimate_2040, 
 	               CASE WHEN t1.sum_acres < 0 THEN 0 ELSE t1.sum_acres END AS sum_acres  
 FROM UrbanSim.Alt_3_Density_Within_TPAS_By_County as t1 INNER JOIN
 dbo.Counties as t2 ON 
@@ -687,10 +687,10 @@ GO
 DROP VIEW UrbanSim.Alt_5_Density_Within_TPAS_By_County_No_Zero;
 GO
 CREATE VIEW UrbanSim.Alt_5_Density_Within_TPAS_By_County_No_Zero AS
-SELECT COUNTYNAME, CASE WHEN t1.sum_residential_units_estimate_2015 < 0 THEN 0 ELSE t1.sum_residential_units_estimate_2015 END AS sum_residential_units_estimate_2015, 
-				   CASE WHEN t1.sum_job_spaces_estimate_2015 < 0 THEN 0 ELSE t1.sum_job_spaces_estimate_2015 END AS sum_job_spaces_estimate_2015, 
-				   CASE WHEN t1.sum_residential_units_estimate_2040 < 0 THEN 0 ELSE t1.sum_residential_units_estimate_2040 END AS sum_residential_units_estimate_2040, 
-				   CASE WHEN t1.sum_job_spaces_estimate_2040 < 0 THEN 0 ELSE t1.sum_job_spaces_estimate_2040 END AS sum_job_spaces_estimate_2040, 
+SELECT COUNTYNAME, CASE WHEN t1.sum_residential_units_estimate_2015 > t1.sum_residential_units_estimate_2040 THEN t1.sum_residential_units_estimate_2015 ELSE t1.sum_residential_units_estimate_2040 END AS sum_residential_units_estimate_2040, 
+				   t1.sum_job_spaces_estimate_2015 AS sum_job_spaces_estimate_2015, 
+				   t1.sum_residential_units_estimate_2015 AS sum_residential_units_estimate_2015, 
+				   CASE WHEN t1.sum_job_spaces_estimate_2040 < t1.sum_job_spaces_estimate_2015 THEN t1.sum_job_spaces_estimate_2015 ELSE t1.sum_job_spaces_estimate_2040 END AS sum_job_spaces_estimate_2040, 
 	               CASE WHEN t1.sum_acres < 0 THEN 0 ELSE t1.sum_acres END AS sum_acres  
 FROM UrbanSim.Alt_5_Density_Within_TPAS_By_County as t1 INNER JOIN
 dbo.Counties as t2 ON 
@@ -699,10 +699,10 @@ GO
 DROP VIEW UrbanSim.Alt_1_Density_Within_TPAS_By_County_No_Zero;
 GO
 CREATE VIEW UrbanSim.Alt_1_Density_Within_TPAS_By_County_No_Zero AS
-SELECT COUNTYNAME, CASE WHEN t1.sum_residential_units_estimate_2015 < 0 THEN 0 ELSE t1.sum_residential_units_estimate_2015 END AS sum_residential_units_estimate_2015, 
-				   CASE WHEN t1.sum_job_spaces_estimate_2015 < 0 THEN 0 ELSE t1.sum_job_spaces_estimate_2015 END AS sum_job_spaces_estimate_2015, 
-				   CASE WHEN t1.sum_residential_units_estimate_2040 < 0 THEN 0 ELSE t1.sum_residential_units_estimate_2040 END AS sum_residential_units_estimate_2040, 
-				   CASE WHEN t1.sum_job_spaces_estimate_2040 < 0 THEN 0 ELSE t1.sum_job_spaces_estimate_2040 END AS sum_job_spaces_estimate_2040, 
+SELECT COUNTYNAME, CASE WHEN t1.sum_residential_units_estimate_2015 > t1.sum_residential_units_estimate_2040 THEN t1.sum_residential_units_estimate_2015 ELSE t1.sum_residential_units_estimate_2040 END AS sum_residential_units_estimate_2040, 
+				   t1.sum_job_spaces_estimate_2015 AS sum_job_spaces_estimate_2015, 
+				   t1.sum_residential_units_estimate_2015 AS sum_residential_units_estimate_2015, 
+				   CASE WHEN t1.sum_job_spaces_estimate_2040 < t1.sum_job_spaces_estimate_2015 THEN t1.sum_job_spaces_estimate_2015 ELSE t1.sum_job_spaces_estimate_2040 END AS sum_job_spaces_estimate_2040, 
 	               CASE WHEN t1.sum_acres < 0 THEN 0 ELSE t1.sum_acres END AS sum_acres  
 FROM UrbanSim.Alt_1_Density_Within_TPAS_By_County as t1 INNER JOIN
 dbo.Counties as t2 ON 
