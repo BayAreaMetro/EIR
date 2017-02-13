@@ -16,6 +16,14 @@ from UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY
 Order By parcel_id
 Go
 
+--------------------------------
+-----------Fix Duplicate Parcels
+-----------In the household
+-----------and employment
+-----------change tables, be scenario
+--------------------------------
+
+
 Go
 --Drop view UrbanSim.Dup_GrowthParcels 
 drop view UrbanSim.County_Dup_Parcels;
@@ -321,7 +329,21 @@ WHERE t1.FID_TPAs = 1;
 
 GO
 
+---------------
+---------------
+-------Begin household and employment 
+-------in TPA's work
+-------where showing numbers in 2015
+-------and in 2040, rather than change
+---------------
+---------------
+
 /*
+Repost of the goal below. Because many parcels are in TPA's 
+but not in the growth footprints, by using just the footprint tables above, 
+we can't determine what 2040 or 2015 counts look like. 
+So, we restate the goal, and back out whats needed.
+
 GOAL:
 3.       Quantify by County the:
 a.       2015 and 2040 Dwelling Units per acre within TPAs
@@ -356,6 +378,10 @@ FROM            UrbanSim.COUNTIES_TPAS_ALT_4_OVERLAY as t1
 WHERE t1.FID_TPAs = 1;
 
 
+-------------------
+-------Put TPA's on 
+-------all parcels
+-------------------
 
 --we need to know the TPA for every parcel
 --So, first we need to assign a TPA value to each parcel
@@ -446,12 +472,16 @@ ALTER TABLE UrbanSim.Parcels_Centroid_Only
 DROP COLUMN "tpa_objectid";
 
 -----------------
+-----------------
+--Create Baseline 2050 household and employment numbers from alt 4  
+-----------------
+-----------------
 
 ---based on table creation in Build_Alternative_4_Footprint file
 ---because alt_4 is the preferred scenario--we will use it as the 
 ---baseline for 2015
 ---in theory the scenarios should all be the same for 2015
----but in practice the preferred has had th most review
+---but in practice the preferred has had the most review
 ---and so is probably the most accurate
 
 create view UrbanSim.Alt_4_2040_parcels_in_tpas_units_and_jobs as
@@ -469,6 +499,12 @@ FROM
 	UrbanSim.RUN7224_PARCEL_DATA_2040 AS y2040 ON p.PARCEL_ID = y2040.parcel_id
 	--alt_4 is based on simulation run 7224
 Go
+
+--------------------------
+--------------------
+--Create 2015 and 2040 counts from diff and baseline
+-------------------
+--------------------------
 
 
 DROP view UrbanSim.Alt_4_2015_and_2040_parcel_units_and_jobs_in_tpas_by_parcel;
